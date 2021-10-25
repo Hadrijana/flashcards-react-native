@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import {StyleSheet, Text, View, Button} from 'react-native';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
 import MyCard from './Card'
 import AsyncStorage from '@react-native-community/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,7 +12,10 @@ import { useFocusEffect } from '@react-navigation/native';
 const CardList = ({navigation, route}) => {
     const [keys, setKeys] = useState([]);
 
+    let mounted;
+
     const _retrieveKeys = async () => {
+      if(mounted){ 
         try {
             let keys = await AsyncStorage.getAllKeys()
             setKeys(keys);
@@ -21,42 +24,51 @@ const CardList = ({navigation, route}) => {
           } catch (e) {
             alert('Failed to get keys.')
           }
-       
-        
+        }
       };
 
-      useEffect(
-       ()=> {_retrieveKeys()}, []
-      )
+      useEffect(()=> {
+        mounted = true; 
+        _retrieveKeys();
+
+        return () => {
+          mounted=false}
+      }, [])
 
       useFocusEffect(
         React.useCallback(() => {
           // Do something when the screen is focused
+          mounted=true;
           _retrieveKeys();
           
           return () => {
-            
+            mounted = false;
           };
         }, [])
       );
     
     
+      const renderItem = ({ item }) => (
+        //<HistoryItem cow= {mounted?null : JSON.stringify(item)} key ={mounted?null:JSON.stringify(item)} />
+        <MyCard cow= {mounted?null : JSON.stringify(item)} key ={mounted?null:JSON.stringify(item)}/> 
+      ); 
 
-    //_retrieveKeys();
-    //console.log(keys)
-    
       
-    //let buff= keys
     console.log(keys)
     return(
         <View style={styles.container}>
             <Text>
                 
             </Text>
-            {keys.map((buf)=><MyCard cow= {JSON.stringify(buf)} key ={JSON.stringify(buf)}/> )}
-        
+            <FlatList
+              data={keys}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index}
+            />
         </View>)
 }
+
+// {keys.map((buf)=><MyCard cow= {JSON.stringify(buf)} key ={JSON.stringify(buf)}/> )}
 
 const styles = StyleSheet.create({
     container: {
