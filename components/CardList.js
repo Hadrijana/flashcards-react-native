@@ -54,7 +54,7 @@ const CardList = ({navigation, route}) => {
       ); 
 
       
-    console.log(keys)
+   
     return(
         <View style={styles.container}>
             <Text>
@@ -63,7 +63,7 @@ const CardList = ({navigation, route}) => {
             <FlatList
               data={keys}
               renderItem={renderItem}
-              keyExtractor={(item, index) => index}
+              keyExtractor={(item, index) => index.toString()}
             />
         </View>)
 }
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1, 
         justifyContent: 'center',
+        backgroundColor: '#f2f2f2'
         //alignItems: 'center'
     }
 })

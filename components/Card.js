@@ -1,16 +1,15 @@
 import React from 'react'
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native'
-import { ReloadInstructions } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-community/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import {  Button, Card, Divider } from 'react-native-paper';
+
 
 
 
 export default class MyCard extends React.Component {
+    mounted;
     state = {
-        question: " ",
-        answer: " " 
+        question: "",
+        answer: "" 
     
        
     }
@@ -24,17 +23,25 @@ export default class MyCard extends React.Component {
       
     }
 
+    componentDidMount(){
+        this.mounted=true;
+        this._retrieveData();
+    }
+
+    componentWillUnmount(){
+        this.mounted=false;
+    }
+
     _retrieveData = async () => {
         //console.log(this.props.cow + "receiver")
         try {
           const value = await AsyncStorage.getItem(JSON.parse(this.props.cow));
           if (value !== null) {
             // We have data!!
-            //console.log('heelo form reciever huje jidsajoiaufuadhashdouahisahd')
             let parsed = JSON.parse(value)
-            //console.log(parsed)
-            this.setState(parsed)
-
+            if(this.mounted){
+                this.setState(parsed)
+            }
 
             
           }
@@ -64,12 +71,12 @@ export default class MyCard extends React.Component {
         const isShown = this.state.isShown;
         if(isShown){
             area = (<TouchableOpacity onPress={this.handleHideClick}>
-                <Text>{this.state.answer}</Text>
+                <Text style= {styles.answer} >{this.state.answer}</Text>
             </TouchableOpacity>)
         }
         else{
             area = (<TouchableOpacity onPress={this.handleRevealClick}>
-               <Text>Click to reveal</Text> 
+               <Text style= {styles.answer} >Click to reveal</Text> 
             </TouchableOpacity>)
         }
         //console.log(this.props.cow)
@@ -78,10 +85,10 @@ export default class MyCard extends React.Component {
         return(
 
             <View style= {styles.container}>
-                <Text>
+                <Text style= {styles.question}>
                     {this.state.question}
                     
-                </Text>
+                </Text >
                 {area}                 
                 
             </View>
@@ -95,10 +102,28 @@ const styles = StyleSheet.create({
         flex: 1, 
         justifyContent: 'center',
         alignItems: 'center', 
-        backgroundColor: '#DCDCDC',
-        maxHeight: 50,
-        margin: 5
+        backgroundColor: '#FFFFFF',
+        margin: 10,
+        marginLeft: 20,
+        marginRight: 20,
+        borderRadius: 10,
+        
+        
+    },
+
+    question:{
+        fontSize: 17,
+        margin: 10,
+    },
+    answer:{
+        fontSize: 17,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        marginRight: 10,
+        marginLeft: 10,
+        color: '#290066'
     }
+
 })
 
 const Answer = (bool) =>{
